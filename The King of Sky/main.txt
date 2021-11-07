@@ -1,0 +1,81 @@
+import pygame
+import sys
+import my_plane
+import enemy_plane
+import bullet
+from pygame.locals import *
+#导入库和自定义文件
+
+pygame.init()
+size = width, height = 768,900#定义分辨率
+clock=pygame.time.Clock()#定义帧数
+bg_color = (230,230,230)#背景颜色
+screen = pygame.display.set_mode(size)#定义一个size大小的屏幕对象
+pygame.display.set_caption("plane game")#游戏命名
+me=my_plane.My_plane(size)#定义My_plane的对象
+def add_small_enemy(group1,group2,num):
+	for i in range(num):
+		s_em1=enemy_plane.S_enemy(size)
+		group1.add(s_em1)#只是小飞机
+		group2.add(s_em1)#全部敌机
+def add_bullet(group1):
+		bul=bullet.Bullet1(me.rect.midtop)
+		group1.add(bul)#子弹组
+bullets=pygame.sprite.Group()
+enemy=pygame.sprite.Group()
+small_enemy=pygame.sprite.Group()
+add_small_enemy(small_enemy,enemy,30)#调用函数，显示敌机数量
+running=True
+while running:
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			sys.exit()
+	key_pressed=pygame.key.get_pressed()#获取键盘按下事件
+	if key_pressed[K_w]:
+		me.move_up()
+	if key_pressed[K_s]:
+		me.move_down()
+	if key_pressed[K_a]:
+		me.move_left()
+	if key_pressed[K_d]:
+		me.move_right()
+	if key_pressed[K_u]:
+		add_bullet(bullets)
+	screen.fill(bg_color)#屏幕填充颜色
+	for e in bullets:
+		if e.active:
+			e.move()
+			screen.blit(e.image,e.rect)#把子弹的图片填充到子弹对象的长方形区域
+			#判断一个子弹的区域与一组敌机的区域重合情况，并把碰撞结果返回到e_hit组里
+			e_hit = pygame.sprite.spritecollide(e,enemy,False,pygame.sprite.collide_mask)
+			if e_hit:#如果碰撞
+				e.active=False#子弹停止运动
+				for each in e_hit:
+					each.active=False#敌机爆炸并停止运动
+	#判断一个我方飞机区域和多个敌方飞机区域是否重合，并把碰撞结果返回到e_down组里,e_down里只包括敌方飞机
+	e_down = pygame.sprite.spritecollide(me,enemy,False,pygame.sprite.collide_mask)
+	if e_down:
+		me.active=False#我方飞机爆炸并停止运动
+		for e in e_down:
+			e.active=False#每一个在e_down中的敌方飞机都要销毁
+	for each in small_enemy:#每一个敌方小飞机
+		if each.active:#如果敌方小飞机的active等于true
+			each.move()#每个敌方小飞机会向前冲
+			screen.blit(each.image,each.rect)#不断地更新小飞机的长方形区域，并不断地向长方形区域里填充小飞机的图片
+		else:
+			screen.blit(each.crash_image,each.rect)如果小飞机的active=False
+			pygame.time.delay(5)延迟
+			each.reset()
+			each.active=True
+	if me.active:
+		screen.blit(me.image,me.rect)
+	else:
+		screen.blit(me.crash_image,me.rect)
+		print("game over!!!")
+		running=False
+	pygame.display.flip()
+	clock.tick(60)
+
+
+
+

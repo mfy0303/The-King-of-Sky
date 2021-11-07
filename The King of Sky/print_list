@@ -1,0 +1,5 @@
+import pickle
+
+pf=open("sco",'rb')
+ml=pickle.load(pf)
+print(ml)
