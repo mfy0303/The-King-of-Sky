@@ -1,3 +1,6 @@
+###################################
+#    Coding by MFY0303 2021-11-07
+###################################
 import pygame
 import sys
 import pickle
@@ -7,7 +10,7 @@ import bullet
 import e_bullet
 import easygui as gui
 from pygame.locals import *
-
+# global init
 pygame.init()
 size = width, height = 768,900
 clock=pygame.time.Clock()
@@ -32,6 +35,7 @@ level_up=1000
 level_flag=0
 small_em_crash_delay=0
 big_em_crash_delay=0
+
 def read_s_file():
 	try:
 		print("try to read")
