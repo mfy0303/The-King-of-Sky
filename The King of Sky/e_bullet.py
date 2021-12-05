@@ -7,7 +7,7 @@ class E_Bullet(pygame.sprite.Sprite):
 		self.image = pygame.image.load("bul.png").convert_alpha()
 		self.rect = self.image.get_rect()
 		self.rect.left,self.rect.top = position
-		self.init_position = position
+		self.init_position = position#AVADA KEDAVRA
 		self.width,self.height = bg_size[0],bg_size[1]
 		self.speed=2
 		self.active=True
