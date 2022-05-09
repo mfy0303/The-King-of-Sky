@@ -4,7 +4,6 @@
 #####################################
 #####################################
 import pygame
-import sys
 import pickle
 import my_plane
 import enemy_plane
@@ -77,8 +76,8 @@ add_big_enemy(big_enemy,enemy,2)
 running=True
 while running:
 	for event in pygame.event.get():
-		if event.type == QUIT:
-			sys.exit()
+		if event.type == pygame.QUIT:
+			running=False
 		if event.type==KEYDOWN:
 			if event.key==K_u:
 				add_bullet(bullets)
