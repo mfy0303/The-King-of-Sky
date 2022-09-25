@@ -13,15 +13,22 @@ import easygui as gui
 from pygame.locals import *
 # global init
 pygame.init()
+pygame.mixer.init()
 size = width, height = 768,900
 clock=pygame.time.Clock()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("plane game")
 bg_img = pygame.image.load("background.png").convert()
+pygame.mixer.music.load("background_music.mp3")
+pygame.mixer.music.set_volume(0.2)
+bullet_sound = pygame.mixer.Sound('bullet_sound.ogg')
+bullet_sound.set_volume(0.2)
+pygame.mixer.music.play(-1)
 score_list_lv1=[]
 score_list_lv2=[]
 score_small_enemy=0
 score_big_enemy=0
+bullet_out=0
 score_all=0
 speed_bullet=0
 speed_small_enemy=0
@@ -33,6 +40,7 @@ big_em_crash_object=enemy_plane.B_enemy(size)
 small_em_crash_object=enemy_plane.S_enemy(size)
 big_enemy_bullet_cycle=0
 level_up=1000
+b_e_die_num=0
 level_flag=0
 small_em_crash_delay=0
 big_em_crash_delay=0
@@ -64,7 +72,7 @@ def add_bullet(group1):
 	group1.add(bul)
 def add_e_bullet(group1):
 	for each in big_enemy:
-		e_bul=e_bullet.E_Bullet(each.rect.midtop,size)
+		e_bul=e_bullet.E_Bullet(each.rect.midbottom,size)
 		group1.add(e_bul)
 bullets=pygame.sprite.Group()
 e_bullets=pygame.sprite.Group()
@@ -80,7 +88,11 @@ while running:
 			running=False
 		if event.type==KEYDOWN:
 			if event.key==K_u:
-				add_bullet(bullets)
+				bullet_out=1
+				if bullet_out==1:
+					add_bullet(bullets)
+					bullet_sound.play(loops=0,maxtime=0,fade_ms=0)
+					bullet_out=0
 	key_pressed=pygame.key.get_pressed()
 	if key_pressed[K_w]:
 		me_object.move_up()
@@ -113,6 +125,7 @@ while running:
 						big_em_crash_delay=1
 						big_em_crash_object=each
 						each.active=False
+						b_e_die_num=b_e_die_num+1
 						score_big_enemy=score_big_enemy+100
 	score_all=score_small_enemy+score_big_enemy
 	score_text=score_font.render("SCORE:%s"%str(score_all),True,(255,255,255))
@@ -135,7 +148,7 @@ while running:
 			screen.blit(e.image,e.rect)
 		if speed_bullet == 1:
 			speed_bullet=0
-			each.speed=each.speed+0.5
+			e.speed=e.speed+0.5
 	me_hit=pygame.sprite.spritecollide(me_object,e_bullets,False,pygame.sprite.collide_mask)
 	if me_hit:
 		me_object.active=False
@@ -165,7 +178,7 @@ while running:
 			each.move()
 			if each.rect.bottom == each.height-450:
 				big_enemy_bullet_cycle=big_enemy_bullet_cycle+1
-				if big_enemy_bullet_cycle==400:
+				if big_enemy_bullet_cycle==100:
 					add_e_bullet(e_bullets)
 					big_enemy_bullet_cycle=0
 			screen.blit(each.image,each.rect)
@@ -181,6 +194,7 @@ while running:
 			big_em_crash_object.active=True
 			big_em_crash_object.blood=5
 			big_em_crash_delay=0
+			b_e_die_num=0
 	if me_object.active:
 		screen.blit(me_object.image,me_object.rect)
 	else:
@@ -199,9 +213,7 @@ score_list_lv2.append(name)
 score_list_lv2.append(score_all)
 score_list_lv1.append(score_list_lv2)
 score_list_lv1.sort(key=lambda x:x[1],reverse=True)
-print(score_list_lv1)
 gui.choicebox(msg2,title2,score_list_lv1)
-print(score_list_lv1)
 pickle_file=open("sco",'wb')
 pickle.dump(score_list_lv1,pickle_file)
 pickle_file.close()

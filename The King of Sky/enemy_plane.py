@@ -5,7 +5,7 @@ class S_enemy(pygame.sprite.Sprite):
 	def __init__(self,bg_size):
 		pygame.sprite.Sprite.__init__(self)
 		self.crash_image = pygame.image.load("em_plane_crash.png").convert_alpha()
-		self.image = pygame.image.load("em_plane.png").convert_alpha()
+		self.image = pygame.image.load("booo.png").convert_alpha()
 		self.rect = self.image.get_rect()
 		self.width,self.height = bg_size[0],bg_size[1]
 		self.speed=1
